@@ -1,0 +1,75 @@
+---
+title: "Final Project Air Travel"
+author: "Juliet Cramer"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(maps)          # for map data
+library(ggmap)         # for mapping points on maps
+library(gplots)        # for col2hex() function
+library(readr)
+```
+
+
+```{r}
+number_of_commercial_flights <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character())) #This is the flight data set
+Unemployment_Rate <- read_csv("Unemployment_Rate.csv", skip = 2)
+#This is the unemployment rate Data Set
+TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
+    col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+#This is the data set for TSA Travelers
+```
+
+## R Markdown
+
+
+```{r}
+TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
+  arrange(Date) %>% 
+  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         Tot_Trav = `Total Traveler Throughput`) %>% 
+  ggplot(aes(x = Date,
+             y = `Tot_Trav`)) +
+  geom_line() +
+  labs(title = "Total Number of Travelers by Month 2020 through TSA", 
+       x = " ", 
+       y = " ")
+```
+
+```{r}
+TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
+  arrange(Date) %>% 
+  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         Tot_Trav = `Total Traveler Throughput`) %>% 
+  ggplot(aes(x = Date,
+             y = `Tot_Trav_Year_Ago`)) +
+  geom_line() +
+  labs(title = "Total Number of Travelers by Month 2019 through TSA", 
+       x = " ", 
+       y = " ")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+I want to explore a little bit as to how the unemployment rate and the traffic through TSA are related. Is there a correlation there? My hypothesis is that unemployment rates and TSA traffic are inversely related. In other words, when unemployment is high (such as during the COVID-19 pandemic), the number of people traveling is low. Let's see. 
+
+```{r}
+Unemployment_Rate %>% ##NEEDS WORK
+  pivot_longer(cols = Jan:Dec, 
+              names_to = "Month")
+```
+
