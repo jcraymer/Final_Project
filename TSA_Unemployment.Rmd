@@ -31,7 +31,7 @@ Fixed_Unemployment <- read_csv("Fixed Unemployment.csv",
 
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
-#This is the data set for TSA Travelers
+#This is the data set for TSA Travelers 
 ```
 
 ## R Markdown
