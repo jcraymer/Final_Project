@@ -63,7 +63,8 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
   rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
          Tot_Trav = `Total Traveler Throughput`) %>% 
   ggplot(aes(x = Date,
-             y = `Tot_Trav`)) +
+             y = `Tot_Trav`, 
+             color = "red")) +
   geom_line() +
   labs(title = "Total Number of Travelers by Month 2020 through TSA", 
        x = " ", 
