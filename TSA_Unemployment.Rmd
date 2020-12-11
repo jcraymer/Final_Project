@@ -141,3 +141,10 @@ covid19 %>%
                date_minor_breaks = "1 week")
 ```
 
+```{r}
+Number_Of_Flights %>% 
+  ggplot(aes(x = Month, 
+             y = Total, color = Year)) + 
+  geom_jitter()
+```
+
