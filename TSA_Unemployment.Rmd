@@ -28,6 +28,7 @@ library(plotly)        # for the ggplotly() - basic interactivity
 library(gganimate)     # for adding animation layers to ggplots
 library(transformr)    # for "tweening" (gganimate)
 library(readr)
+library(scales)
 gs4_deauth()           # To not have to authorize each time you knit.
 theme_set(theme_minimal())
 ```
@@ -54,6 +55,8 @@ TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv",
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
 
 UNRATE_Large <- read_csv("UNRATE_Large.csv")
+
+Number_Of_Flights <- read_csv("Number_Of_Flights.csv")
 ```
 
 ## R Markdown
@@ -103,7 +106,13 @@ Fixed_Unemployment %>% ##NEEDS WORK, ask for help from Lisa about how to delete 
 ```
 
 ```{r}
-number_of_commercial_flights %>% 
-  
+Number_Of_Flights %>% 
+  group_by(Year) %>% 
+  summarize(total_travel = sum(Total)) %>%
+  ggplot(aes(y = total_travel, 
+             x = Year)) + 
+  geom_point() + 
+  scale_y_continuous(labels = comma) + 
+  labs(title = "Total Number of Flights from 2007-2008 and 2018-2020")
 ```
 
