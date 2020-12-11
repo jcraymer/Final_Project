@@ -82,7 +82,8 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
   labs(title = "<span style = 'color: cadetblue;'> Landline </span> and <span style = 'color: coral;'> Mobile </span> Subscriptions Over Past 30 Years in the US", 
        x = " ", 
        y = " ") +
-  scale_y_continuous(labels = comma)
+  scale_y_continuous(labels = comma) +
+  gganimate()
 ```
 
 ## Including Plots
