@@ -28,7 +28,9 @@ library(plotly)        # for the ggplotly() - basic interactivity
 library(gganimate)     # for adding animation layers to ggplots
 library(transformr)    # for "tweening" (gganimate)
 library(readr)
-library(scales)
+library(scales)      # for even more plotting themes
+library(ggplot2)
+library(ggtext)    
 gs4_deauth()           # To not have to authorize each time you knit.
 theme_set(theme_minimal())
 ```
@@ -122,6 +124,20 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
 ```
 
 ```{r}
-
+covid19 %>% 
+  group_by(date) %>% 
+  summarise(total_num_cases = sum(cases), total_num_death = sum(deaths)) %>% 
+  ggplot() +
+  geom_line(aes(x = date, y = total_num_cases, color = "blue")) +
+  geom_line(aes(x = date, y = total_num_death, color = "red")) + 
+  labs(x = "",
+       y = "",
+       color = "",
+       title = "Cumulative COVID-19 Cases and Deaths in US") + 
+  theme(legend.position = "bottom") +
+  scale_y_log10(labels = comma) + #uses the scales library
+  scale_x_date(date_breaks = "1 month",
+               date_labels = "%b",
+               date_minor_breaks = "1 week")
 ```
 
