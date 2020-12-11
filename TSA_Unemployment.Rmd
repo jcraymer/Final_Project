@@ -63,8 +63,7 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
   rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
          Tot_Trav = `Total Traveler Throughput`) %>% 
   ggplot(aes(x = Date,
-             y = `Tot_Trav`, 
-             color = "red")) +
+             y = `Tot_Trav`)) +
   geom_line() +
   labs(title = "Total Number of Travelers by Month 2020 through TSA", 
        x = " ", 
@@ -93,9 +92,11 @@ I want to explore a little bit as to how the unemployment rate and the traffic t
 ```{r}
 Fixed_Unemployment %>% ##NEEDS WORK
   pivot_longer(cols = Jan:Dec, 
-              names_to = "Month")
-  ggplot(aes(x = year, 
-             y = value)) + 
+              names_to = "Month") %>%
+  group_by(Year) %>% 
+  summarize(avg_unemploy = sum(value)/12) %>% 
+  ggplot(aes(x = Year, 
+             y = avg_unemploy)) + 
   geom_point()
 ```
 
