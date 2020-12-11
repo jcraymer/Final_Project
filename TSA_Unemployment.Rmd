@@ -52,6 +52,8 @@ number_of_commercial_flights <- read_csv("number_of_commercial_flights.csv", col
 #TSA Travelers data
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+
+UNRATE_Large <- read_csv("UNRATE_Large.csv")
 ```
 
 ## R Markdown
