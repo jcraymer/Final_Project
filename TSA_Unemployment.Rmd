@@ -106,6 +106,22 @@ Number_Of_Flights %>%
 ```
 
 ```{r}
+TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
+  arrange(Date) %>% 
+  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         Tot_Trav = `Total Traveler Throughput`) %>% 
+  ggplot() +
+  geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
+  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
+  labs(title = "<span style = 'color: cadetblue;'> Landline </span> and <span style = 'color: coral;'> Mobile </span> Subscriptions Over Past 30 Years in the US", 
+       x = " ", 
+       y = " ", 
+       subtitle = "Date: {frame_along}") +
+  scale_y_continuous(labels = comma) +
+  transition_reveal(Date) 
+```
+
+```{r}
 
 ```
 
