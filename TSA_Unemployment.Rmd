@@ -95,17 +95,6 @@ You can also embed plots, for example:
 I want to explore a little bit as to how the unemployment rate and the traffic through TSA are related. Is there a correlation there? My hypothesis is that unemployment rates and TSA traffic are inversely related. In other words, when unemployment is high (such as during the COVID-19 pandemic), the number of people traveling is low. Let's see. 
 
 ```{r}
-Fixed_Unemployment %>% ##NEEDS WORK, ask for help from Lisa about how to delete final row
-  pivot_longer(cols = Jan:Dec, 
-              names_to = "Month") %>%
-  group_by(Year) %>% 
-  summarize(avg_unemploy = sum(value)/12) %>% 
-  ggplot(aes(x = Year, 
-             y = avg_unemploy)) + 
-  geom_point()
-```
-
-```{r}
 Number_Of_Flights %>% 
   group_by(Year) %>% 
   summarize(total_travel = sum(Total)) %>%
@@ -114,5 +103,9 @@ Number_Of_Flights %>%
   geom_point() + 
   scale_y_continuous(labels = comma) + 
   labs(title = "Total Number of Flights from 2007-2008 and 2018-2020")
+```
+
+```{r}
+
 ```
 
