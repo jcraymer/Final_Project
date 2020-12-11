@@ -106,6 +106,14 @@ Fixed_Unemployment %>% ##NEEDS WORK, ask for help from Lisa about how to delete 
 ```
 
 ```{r}
+UNRATE_Large %>% 
+  ggplot(aes(x = DATE, 
+             y = UNRATE)) + 
+  geom_line()
+```
+
+
+```{r}
 number_of_commercial_flights %>% 
   
 ```
