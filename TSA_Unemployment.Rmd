@@ -142,9 +142,36 @@ covid19 %>%
 ```
 
 ```{r}
-Number_Of_Flights %>% 
+Number_Of_Flights %>%
+  filter(Year == 2007) %>% 
   ggplot(aes(x = Month, 
-             y = Total, color = Year)) + 
-  geom_jitter()
+             y = Total)) + 
+  geom_line() + 
+  scale_y_continuous(labels = comma) 
+```
+```{r}
+Number_Of_Flights %>%
+  filter(Year == 2008) %>% 
+  ggplot(aes(x = Month, 
+             y = Total)) + 
+  geom_line() + 
+  scale_y_continuous(labels = comma) 
+```
+```{r}
+Number_Of_Flights %>%
+  filter(Year == 2019) %>% 
+  ggplot(aes(x = Month, 
+             y = Total)) + 
+  geom_line() + 
+  scale_y_continuous(labels = comma) 
+```
+
+```{r}
+Number_Of_Flights %>%
+  filter(Year == 2020) %>% 
+  ggplot(aes(x = Month, 
+             y = Total)) + 
+  geom_line() + 
+  scale_y_continuous(labels = comma) 
 ```
 
