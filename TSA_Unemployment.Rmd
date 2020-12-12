@@ -176,6 +176,9 @@ Number_Of_Flights %>%
 ```
 
 ```{r}
-
+UNRATE_Large %>% 
+  filter(between(DATE, as.Date("2019-01-01"), as.Date("2020-11-01"))) %>%
+  ggplot() + 
+  geom_line(aes(x = DATE, y = UNRATE))
 ```
 
