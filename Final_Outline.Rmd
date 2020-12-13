@@ -167,4 +167,18 @@ Number_Of_Flights %>%
   scale_y_continuous(labels = comma) 
 ```
 
+JUST ANOTHER GRAPH TO CONSIDER
+
+```{r}
+UNRATE_Large %>% ## Fix so that the dates come up as months on the x axis
+  filter(between(DATE, as.Date("2007-01-01"), as.Date("2020-12-01"))) %>%
+  ggplot() + 
+  geom_line(aes(x = DATE, y = UNRATE)) + 
+  labs(title = "Uneployment Rate from 2007 to 2020", 
+       x = " ", 
+       y = " ")
+```
+
+
+
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
