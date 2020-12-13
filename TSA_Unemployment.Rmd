@@ -193,3 +193,32 @@ UNRATE_Large %>% ## Fix so that the dates come up as months on the x axis
        y = " ")
 ```
 
+```{r}
+Number_Of_Flights %>%
+  filter(Year == 2020) %>% 
+  ggplot() + 
+  geom_line(aes(x = Month, 
+             y = Total), color = "purple") + 
+  geom_line(aes(x = Month, 
+                y = Domestic), color = "blue") + 
+  geom_line(aes(x = Month, 
+                y = International), color = "red") + 
+  scale_y_continuous(labels = comma) + 
+  labs(title = "Number of Domestic, International, and Total Passengers in U.S in 2020", 
+       y = " ")
+```
+
+```{r}
+Number_Of_Flights %>%
+  filter(Year == 2019) %>% 
+  ggplot() + 
+  geom_line(aes(x = Month, 
+             y = Total), color = "purple") + 
+  geom_line(aes(x = Month, 
+                y = Domestic), color = "blue") + 
+  geom_line(aes(x = Month, 
+                y = International), color = "red") + 
+  scale_y_continuous(labels = comma) + 
+  labs(title = "Number of Domestic, International, and Total Passengers in U.S in 2020", 
+       y = " ")
+```
