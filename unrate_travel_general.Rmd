@@ -203,7 +203,7 @@ UNRATE_Large %>%
 
 
 ```{r}
-Number_Of_Flights %>% 
+Number_Of_Flights %>%
   group_by(Year) %>% 
   summarize(total_travel = sum(Total)) %>%
   ggplot(aes(y = total_travel, 
