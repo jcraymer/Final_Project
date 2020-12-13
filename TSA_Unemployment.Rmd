@@ -90,7 +90,22 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
        y = " ")
 ```
 
-## Including Plots
+```{r}
+TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
+  arrange(Date) %>% 
+  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         Tot_Trav = `Total Traveler Throughput`) %>% 
+  ggplot() +
+  geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
+  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
+  labs(title = "<span style = 'color: cadetblue;'> Landline </span> and <span style = 'color: coral;'> Mobile </span> Subscriptions Over Past 30 Years in the US", 
+       x = " ", 
+       y = " ", 
+       subtitle = "Date: {frame_along}") +
+  scale_y_continuous(labels = comma) +
+  transition_reveal(Date) 
+```
+
 
 You can also embed plots, for example:
 
@@ -106,21 +121,11 @@ Number_Of_Flights %>%
   scale_y_continuous(labels = comma) + 
   labs(title = "Total Number of Flights from 2007-2008 and 2018-2020")
 ```
-
 ```{r}
-TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
-  arrange(Date) %>% 
-  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
-         Tot_Trav = `Total Traveler Throughput`) %>% 
-  ggplot() +
-  geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
-  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
-  labs(title = "<span style = 'color: cadetblue;'> Landline </span> and <span style = 'color: coral;'> Mobile </span> Subscriptions Over Past 30 Years in the US", 
-       x = " ", 
-       y = " ", 
-       subtitle = "Date: {frame_along}") +
-  scale_y_continuous(labels = comma) +
-  transition_reveal(Date) 
+UNRATE_Large %>% ## Fix so that the dates come up as months on the x axis
+  filter(between(DATE, as.Date("2019-01-01"), as.Date("2020-11-01"))) %>%
+  ggplot() + 
+  geom_line(aes(x = DATE, y = UNRATE))
 ```
 
 ```{r}
@@ -149,6 +154,8 @@ Number_Of_Flights %>%
   geom_line() + 
   scale_y_continuous(labels = comma) 
 ```
+
+
 ```{r}
 Number_Of_Flights %>%
   filter(Year == 2008) %>% 
@@ -157,6 +164,7 @@ Number_Of_Flights %>%
   geom_line() + 
   scale_y_continuous(labels = comma) 
 ```
+
 ```{r}
 Number_Of_Flights %>%
   filter(Year == 2019) %>% 
@@ -175,10 +183,4 @@ Number_Of_Flights %>%
   scale_y_continuous(labels = comma) 
 ```
 
-```{r}
-UNRATE_Large %>% 
-  filter(between(DATE, as.Date("2019-01-01"), as.Date("2020-11-01"))) %>%
-  ggplot() + 
-  geom_line(aes(x = DATE, y = UNRATE))
-```
 
