@@ -98,7 +98,7 @@ TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
   ggplot() +
   geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
   geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
-  labs(title = "<span style = 'color: cadetblue;'> Landline </span> and <span style = 'color: coral;'> Mobile </span> Subscriptions Over Past 30 Years in the US", 
+  labs(title = "TSA Travel Throughput from 2019-2020", 
        x = " ", 
        y = " ", 
        subtitle = "Date: {frame_along}") +
