@@ -50,15 +50,15 @@ TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv",
 covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
 
 #Commercial Flights data
-flight_data_2020 <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character()))
+#flight_data_2020 <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character()))
 
 #TSA Travelers data
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
 
-UNRATE_Large <- read_csv("UNRATE_Large.csv")
+unrate_large <- read_csv("UNRATE_Large.csv")
 
-Number_Of_Flights <- read_csv("Number_Of_Flights.csv")
+number_of_passengers <- read_csv("Number_Of_Flights.csv")
 ```
 
 ## R Markdown
@@ -161,15 +161,21 @@ covid19 %>%
 ```
 
 ```{r}
-Number_Of_Flights %>%
-  filter(Year == 2007) %>% 
+number_of_passengers %>%
+  type.convert(as.is = TRUE) %>% 
+  group_by(Year, Month) %>% 
+  summarize(Month, Total) %>% 
+  filter(Year %in% c("2007", "2008")) %>% 
   ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
+             y = Total,
+             color = Year,
+            group_vars())) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
   scale_y_continuous(labels = comma) 
 ```
 ```{r}
-Number_Of_Flights %>%
+number_of_passengers %>%
   filter(Year == 2008) %>% 
   ggplot(aes(x = Month, 
              y = Total)) + 
@@ -177,7 +183,7 @@ Number_Of_Flights %>%
   scale_y_continuous(labels = comma) 
 ```
 ```{r}
-Number_Of_Flights %>%
+number_of_passengers %>%
   filter(Year == 2019) %>% 
   ggplot(aes(x = Month, 
              y = Total)) + 
@@ -186,7 +192,7 @@ Number_Of_Flights %>%
 ```
 
 ```{r}
-Number_Of_Flights %>%
+number_of_passengers %>%
   filter(Year == 2020) %>% 
   ggplot(aes(x = Month, 
              y = Total)) + 
@@ -195,7 +201,7 @@ Number_Of_Flights %>%
 ```
 
 ```{r}
-UNRATE_Large %>% 
+unrate_large %>% 
   filter(between(DATE, as.Date("2019-01-01"), as.Date("2020-11-01"))) %>%
   ggplot() + 
   geom_line(aes(x = DATE, y = UNRATE))
@@ -203,7 +209,7 @@ UNRATE_Large %>%
 
 
 ```{r}
-Number_Of_Flights %>%
+number_of_passengers %>%
   group_by(Year) %>% 
   summarize(total_travel = sum(Total)) %>%
   ggplot(aes(y = total_travel, 
