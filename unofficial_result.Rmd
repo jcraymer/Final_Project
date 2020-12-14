@@ -1,0 +1,266 @@
+---
+title: "Why has flight travel been impacted?"
+author: "Juliet Cramer, Elie Rizk and Julius Enarsson Enestrom"
+output: 
+  html_document:
+    keep_md: TRUE
+    toc: TRUE
+    toc_float: TRUE
+    df_print: paged
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+##knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(base)
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(maps)          # for map data
+library(ggmap)         # for mapping points on maps
+library(gplots)        # for col2hex() function
+library(RColorBrewer)  # for color palettes
+library(sf)            # for working with spatial data
+library(leaflet)       # for highly customizable mapping
+library(ggthemes)      # for more themes (including theme_map())
+library(plotly)        # for the ggplotly() - basic interactivity
+library(gganimate)     # for adding animation layers to ggplots
+library(transformr)    # for "tweening" (gganimate)
+library(readr)
+library(scales)      # for even more plotting themes
+library(ggplot2)
+library(ggtext)    
+gs4_deauth()           # To not have to authorize each time you knit.
+theme_set(theme_minimal())
+```
+
+
+```{r}
+#number_of_commercial_flights <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character())) #This is the flight data set
+#Fixed_Unemployment <- read_csv("Fixed Unemployment.csv", DONT THINK WE NEED THIS FILE, CAN USE UNRATE_Large instead
+  #  skip = 1)
+TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
+    col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+#This is the data set for TSA Travelers 
+#COVID-19 data from the New York Times
+covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+#Commercial Flights data
+
+#flight_data_2020 <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character()))
+
+#TSA Travelers data
+TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
+    col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+unrate_large <- read_csv("UNRATE_Large.csv")
+unrate_large <<-unrate_large %>% 
+  mutate(month = month(unrate_large$DATE)) %>% 
+  transform(MonthAbb = month.abb[month])
+number_of_passengers <- read_csv("Number_Of_Flights.csv")
+number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
+```
+
+## R Markdown
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+I want to explore a little bit as to how the unemployment rate and the traffic through TSA are related. Is there a correlation there? My hypothesis is that unemployment rates and TSA traffic are inversely related. In other words, when unemployment is high (such as during the COVID-19 pandemic), the number of people traveling is low. Let's see. 
+
+
+
+```{r}
+TSA_Travelers_Data_2020 %>% 
+  arrange(Date) %>% 
+  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         Tot_Trav = `Total Traveler Throughput`) %>% 
+  ggplot() +
+  geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
+  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
+  geom_smooth(aes(x = Date, 
+                  y = Tot_Trav_Year_Ago),
+                  color = "firebrick4",
+                  se = FALSE)+
+  geom_smooth(aes(x = Date, 
+                  y = Tot_Trav),
+                  color = "dodgerblue4",
+                  se = FALSE)+
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "TSA Travelers <b style='color:#D55E00'>2019</b> vs. <span style='color:#000dd5;'>2020</span>", 
+       x = " ", 
+       y = " ") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "#b6d4c8"),
+        axis.title = element_blank(),
+        plot.title = element_text(size = "15", face = "bold")) -> travelers
+
+travelers_ggplotly <- ggplotly(
+  p = travelers,
+  width = NULL,
+  height = NULL,
+  tooltip = "all",
+  dynamicTicks = FALSE,
+  layerData = 1,
+  originalData = TRUE,
+  source = "A"
+)
+
+htmlwidgets::saveWidget(travelers_ggplotly, "travelers_ggplotly.html")
+
+travelers_ggplotly
+```
+
+```{r}
+covid19 %>% 
+  group_by(date) %>% 
+  summarise(total_num_cases = sum(cases), total_num_death = sum(deaths)) %>% 
+  ggplot() +
+  geom_line(aes(x = date, 
+                y = total_num_cases, 
+                color = "Cases")) +
+  geom_line(aes(x = date, 
+                y = total_num_death, 
+                color = "Deaths")) + 
+  labs(x = "",
+       y = "",
+       color = "",
+       title = "Cumulative COVID-19 Cases and Deaths in US") + 
+  scale_y_log10(labels = comma) +
+  scale_x_date(date_breaks = "1 month",
+               date_labels = "%b",
+               date_minor_breaks = "1 week")+
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "#b6d4c8"),
+        axis.title = element_blank(),
+        plot.title = element_text(size = "10", 
+                                  face = "bold")) -> covid_sit
+
+covid_ggplotly <- ggplotly(
+  p = covid_sit,
+  width = NULL,
+  height = NULL,
+  tooltip = "all",
+  dynamicTicks = FALSE,
+  layerData = 1,
+  originalData = TRUE,
+  source = "A"
+)
+
+covid_ggplotly
+```
+
+```{r}
+number_of_passengers %>%
+  filter(Year %in% c("2007", "2008")) %>% 
+  mutate(year_sel = ifelse(Year < 2008, 
+                           "2007", "2008")) %>% 
+  ggplot(aes(x = fct_inorder(MonthAbb), 
+             y = Total,
+             color = year_sel)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("#d50077", "#ff8423")) +
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "Number of Passengers <b style='color:#d50077'>2007</b> vs. <span style='color:#ff8423;'>2008</span>", 
+       x = " ", 
+       y = " ") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#b6d4c8"),
+        axis.title = element_blank(),
+        plot.title = element_text(size = "15", face = "bold")) -> travelers_0708
+
+travelers0708_ggplotly <- ggplotly(
+  p = travelers_0708,
+  width = NULL,
+  height = NULL,
+  tooltip = "all",
+  dynamicTicks = FALSE,
+  layerData = 1,
+  originalData = TRUE,
+  source = "A"
+)
+
+htmlwidgets::saveWidget(travelers0708_ggplotly, "travelers0708_ggplotly.html")
+
+travelers0708_ggplotly
+  
+```
+
+```{r}
+number_of_passengers %>%
+  filter(Year %in% c("2019", "2020")) %>% 
+  mutate(year_sel = ifelse(Year < 2020, 
+                           "2019", "2020")) %>% 
+  ggplot(aes(x = fct_inorder(MonthAbb),
+             y = Total,
+             color = year_sel)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("red", "blue")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Number of Passengers <b style='color:#D55E00'>2019</b> vs. <span style='color:#000dd5;'>2020</span>", 
+       x = " ", 
+       y = " ") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#b6d4c8"),
+        axis.title = element_blank(),
+        plot.title = element_text(size = "15", face = "bold")) -> travelers_1920
+
+travelers1920_ggplotly <- ggplotly(
+  p = travelers_1920,
+  width = NULL,
+  height = NULL,
+  tooltip = "all",
+  dynamicTicks = FALSE,
+  layerData = 1,
+  originalData = TRUE,
+  source = "A"
+)
+
+htmlwidgets::saveWidget(travelers1920_ggplotly, "travelers1920_ggplotly.html")
+
+travelers1920_ggplotly
+```
+
+
+
+
+
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
+  mutate(year_sel = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020")) %>% 
+  select(DATE, UNRATE, month, MonthAbb, year_sel) %>% 
+  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = year_sel, group = year_sel)) + 
+  geom_point() +
+  geom_line() +
+  scale_color_manual(values = c("#ff8423", "blue")) +
+  labs(title = "Unemployment Rate <b style='color:#ff8423'>2008</b> vs. <span style='color:#000dd5;'>2020</span>", 
+       x = " ", 
+       y = " ") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#b6d4c8"),
+        axis.title = element_blank(),
+        plot.title = element_text(size = "15", face = "bold")) -> unemployment_0820
+
+unemployment0820_ggplotly <- ggplotly(
+  p = unemployment_0820,
+  width = NULL,
+  height = NULL,
+  tooltip = "all",
+  dynamicTicks = FALSE,
+  layerData = 1,
+  originalData = TRUE,
+  source = "A"
+)
+
+htmlwidgets::saveWidget(unemployment0820_ggplotly, "unemployment0820_ggplotly.html")
+
+unemployment0820_ggplotly
+  
+```
+```
