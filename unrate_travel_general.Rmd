@@ -59,6 +59,10 @@ TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv",
 
 unrate_large <- read_csv("UNRATE_Large.csv")
 
+unrate_large <<-unrate_large %>% 
+  mutate(month = month(unrate_large$DATE)) %>% 
+  transform(MonthAbb = month.abb[month])
+
 number_of_passengers <- read_csv("Number_Of_Flights.csv")
 
 number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
@@ -138,15 +142,11 @@ covid19 %>%
 ```
 
 ```{r}
-Year <- as.factor(as.character(number_of_passengers$Year))
-
 number_of_passengers %>%
-  group_by(Year, Month) %>% 
-  summarize(Month, Total) %>% 
   filter(Year %in% c("2007", "2008")) %>% 
   mutate(year_sel = ifelse(Year < 2008, 
                            "2007", "2008")) %>% 
-  ggplot(aes(x = Month, 
+  ggplot(aes(x = fct_inorder(MonthAbb), 
              y = Total,
              color = year_sel)) +
   geom_point() + 
@@ -155,46 +155,20 @@ number_of_passengers %>%
   scale_y_continuous(labels = comma) 
 ```
 
-# TEST GRAPH!!! NOT CURRENT CODE
 ```{r}
-Year <- as.numeric(as.character(number_of_passengers$Year))
-
-Year <- as.factor(as.character(number_of_passengers$Year))
-
-
- 
-Month <- number_of_passengers %>% 
-  mutate(Month = as.integer(as.factor(as.character(number_of_passengers$Month))))
-
-Month<-month.abb[number_of_passengers$Month] #STILL not working
-
 number_of_passengers %>%
   filter(Year %in% c("2019", "2020")) %>% 
   mutate(year_sel = ifelse(Year < 2020, 
                            "2019", "2020")) %>% 
-  ggplot(aes(x = MonthAbb, 
+  ggplot(aes(x = fct_inorder(MonthAbb),
              y = Total,
              color = year_sel)) +
   geom_point() + 
-  geom_line(aes(group = Year)) +
+  geom_path(aes(group = Year)) +
   scale_color_manual(values = c("red", "blue")) +
   scale_y_continuous(labels = comma) 
 ```
 
-```{r}
-
-number_of_passengers %>%
-  filter(Year %in% c("2019", "2020")) %>% 
-  mutate(year_sel = ifelse(Year < 2020, 
-                           "2019", "2020")) %>% 
-  ggplot(aes(x = Month, 
-             y = Total,
-             color = year_sel)) +
-  geom_point() + 
-  geom_line(aes(group = Year)) +
-  scale_color_manual(values = c("red", "blue")) +
-  scale_y_continuous(labels = comma) 
-```
 
 
 
@@ -204,9 +178,9 @@ unrate_large %>%
   filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
   mutate(year_sel = ifelse(DATE < "2010-01-01", 
                            "2008", "2020")) %>% 
-  mutate(DATE = month(DATE)) %>% 
-  ggplot(aes(x = DATE, y = UNRATE, color = year_sel)) + 
-  geom_line() +
+  select(DATE, UNRATE, month, MonthAbb, year_sel) %>% 
+  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = year_sel)) + 
+  geom_path(group = 1) +
   scale_color_manual(values = c("red", "blue")) +
   labs(color = "Year", 
        y = "Unemployment Rate (%)",
