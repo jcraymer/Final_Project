@@ -179,8 +179,9 @@ unrate_large %>%
   mutate(year_sel = ifelse(DATE < "2010-01-01", 
                            "2008", "2020")) %>% 
   select(DATE, UNRATE, month, MonthAbb, year_sel) %>% 
-  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = year_sel)) + 
-  geom_path(group = 1) +
+  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = year_sel, group = year_sel)) + 
+  geom_point() +
+  geom_line() +
   scale_color_manual(values = c("red", "blue")) +
   labs(color = "Year", 
        y = "Unemployment Rate (%)",
