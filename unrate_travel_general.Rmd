@@ -64,32 +64,6 @@ number_of_passengers <- read_csv("Number_Of_Flights.csv")
 ## R Markdown
 
 
-```{r}
-TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
-  arrange(Date) %>% 
-  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
-         Tot_Trav = `Total Traveler Throughput`) %>% 
-  ggplot(aes(x = Date,
-             y = `Tot_Trav`)) +
-  geom_line() +
-  labs(title = "Total Number of Travelers by Month 2020 through TSA", 
-       x = " ", 
-       y = " ")
-```
-
-```{r}
-TSA_Travelers_Data_2020 %>% ##NEEDS WORK HELP!
-  arrange(Date) %>% 
-  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
-         Tot_Trav = `Total Traveler Throughput`) %>% 
-  ggplot(aes(x = Date,
-             y = `Tot_Trav_Year_Ago`)) +
-  geom_line() +
-  labs(title = "Total Number of Travelers by Month 2019 through TSA", 
-       x = " ", 
-       y = " ")
-```
-
 ## Including Plots
 
 You can also embed plots, for example:
@@ -178,30 +152,23 @@ number_of_passengers %>%
 ```
 
 ```{r}
+Year <- as.factor(as.character(number_of_passengers$Year))
+
 number_of_passengers %>%
-  filter(Year == 2008) %>% 
+  group_by(Year, Month) %>% 
+  summarize(Month, Total) %>% 
+  filter(Year %in% c("2019", "2020")) %>% 
   ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
-  scale_y_continuous(labels = comma) 
-```
-```{r}
-number_of_passengers %>%
-  filter(Year == 2019) %>% 
-  ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
+             y = Total,
+             color = Year,
+            group_vars())) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_continuous_tableau() +
   scale_y_continuous(labels = comma) 
 ```
 
-```{r}
-number_of_passengers %>%
-  filter(Year == 2020) %>% 
-  ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
-  scale_y_continuous(labels = comma) 
-```
+
 
 ```{r}
 unrate_large %>% 
@@ -220,13 +187,4 @@ unrate_large %>%
 ```
 
 
-```{r}
-number_of_passengers %>%
-  group_by(Year) %>% 
-  summarize(total_travel = sum(Total)) %>%
-  ggplot(aes(y = total_travel, 
-             x = Year)) + 
-  geom_point() + 
-  scale_y_continuous(labels = comma) + 
-  labs(title = "Total Number of Flights from 2007-2008 and 2018-2020")
-```
+
