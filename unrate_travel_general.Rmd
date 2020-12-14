@@ -161,7 +161,7 @@ covid19 %>%
 ```
 
 ```{r}
-Year <- as.numeric(as.character(number_of_passengers$Year))
+Year <- as.factor(as.character(number_of_passengers$Year))
 
 number_of_passengers %>%
   group_by(Year, Month) %>% 
@@ -205,9 +205,18 @@ number_of_passengers %>%
 
 ```{r}
 unrate_large %>% 
-  filter(between(DATE, as.Date("2019-01-01"), as.Date("2020-11-01"))) %>%
-  ggplot() + 
-  geom_line(aes(x = DATE, y = UNRATE))
+  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
+  mutate(year_sel = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020")) %>% 
+  mutate(DATE = month(DATE)) %>% 
+  ggplot(aes(x = DATE, y = UNRATE, color = year_sel)) + 
+  geom_line() +
+  scale_color_manual(values = c("red", "blue")) +
+  labs(color = "Year", 
+       y = "Unemployment Rate (%)",
+       x = "Month",
+       title = "Unemployment in 2020 vs 2008")
+```
 ```
 
 
