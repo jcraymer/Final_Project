@@ -74,8 +74,8 @@ TSA_Travelers_Data_2020 %>%
   rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
          Tot_Trav = `Total Traveler Throughput`) %>% 
   ggplot() +
-  geom_line(aes(x= Date, y = Tot_Trav), color = "blue") +
-  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "red") +
+  geom_line(aes(x= Date, y = Tot_Trav), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "firebrick4", alpha = 0.7) +
   geom_smooth(aes(x = Date, 
                   y = Tot_Trav_Year_Ago),
                   color = "firebrick4",
@@ -86,14 +86,14 @@ TSA_Travelers_Data_2020 %>%
                   se = FALSE)+
   scale_y_continuous(labels = scales::comma) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b")+
-  labs(title = "Travel by Plane in <b style='color:#ff0000'>2019</b> vs. <span style='color:#000dd5;'>2020</span>", 
+  labs(title = "Travel by Plane in <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = "Number of People") +
   theme(legend.title = element_blank(),
-        plot.background = element_rect(fill = "#b6d4c8"),
+        panel.background = element_rect(fill = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
         axis.title = element_blank(),
-        plot.title = element_text(size = "15", face = "bold")) +
-  theme_clean()-> travelers
+        plot.title = element_text(size = "15", face = "bold"))  -> travelers
 
 
 
@@ -115,6 +115,8 @@ htmlwidgets::saveWidget(travelers_ggplotly, "travelers_ggplotly.html")
 
 travelers_ggplotly
 ```
+
+
 
 ```{r}
 covid19 %>% 
