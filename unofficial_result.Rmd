@@ -115,7 +115,7 @@ travelers_ggplotly <- ggplotly(
   originalData = TRUE,
   source = "A"
 )
-
+ 
 htmlwidgets::saveWidget(travelers_ggplotly, "travelers_ggplotly.html")
 
 travelers_ggplotly
