@@ -60,6 +60,8 @@ TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv",
 unrate_large <- read_csv("UNRATE_Large.csv")
 
 number_of_passengers <- read_csv("Number_Of_Flights.csv")
+
+number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
 ```
 
 ## R Markdown
@@ -153,6 +155,7 @@ number_of_passengers %>%
   scale_y_continuous(labels = comma) 
 ```
 
+# TEST GRAPH!!! NOT CURRENT CODE
 ```{r}
 Year <- as.numeric(as.character(number_of_passengers$Year))
 
@@ -166,8 +169,21 @@ Month <- number_of_passengers %>%
 Month<-month.abb[number_of_passengers$Month] #STILL not working
 
 number_of_passengers %>%
-  group_by(Year, Month) %>% 
-  summarize(Month, Total) %>% 
+  filter(Year %in% c("2019", "2020")) %>% 
+  mutate(year_sel = ifelse(Year < 2020, 
+                           "2019", "2020")) %>% 
+  ggplot(aes(x = MonthAbb, 
+             y = Total,
+             color = year_sel)) +
+  geom_point() + 
+  geom_line(aes(group = Year)) +
+  scale_color_manual(values = c("red", "blue")) +
+  scale_y_continuous(labels = comma) 
+```
+
+```{r}
+
+number_of_passengers %>%
   filter(Year %in% c("2019", "2020")) %>% 
   mutate(year_sel = ifelse(Year < 2020, 
                            "2019", "2020")) %>% 
@@ -175,10 +191,12 @@ number_of_passengers %>%
              y = Total,
              color = year_sel)) +
   geom_point() + 
-  geom_path(aes(group = Year)) +
+  geom_line(aes(group = Year)) +
   scale_color_manual(values = c("red", "blue")) +
   scale_y_continuous(labels = comma) 
 ```
+
+
 
 
 ```{r}
