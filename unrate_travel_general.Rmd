@@ -156,9 +156,14 @@ number_of_passengers %>%
 ```{r}
 Year <- as.numeric(as.character(number_of_passengers$Year))
 
-Month <- number_of_passengers %>% 
-as.character(month(ymd(010101) + months(number_of_passengers$Month-1),label=TRUE,abbr=TRUE))
+Year <- as.factor(as.character(number_of_passengers$Year))
 
+
+ 
+Month <- number_of_passengers %>% 
+  mutate(Month = as.integer(as.factor(as.character(number_of_passengers$Month))))
+
+Month<-month.abb[number_of_passengers$Month] #STILL not working
 
 number_of_passengers %>%
   group_by(Year, Month) %>% 
