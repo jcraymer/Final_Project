@@ -15,6 +15,7 @@ output:
 ```
 
 ```{r}
+library(base)
 library(tidyverse)     # for data cleaning and plotting
 library(lubridate)     # for date manipulation
 library(maps)          # for map data
@@ -141,30 +142,36 @@ number_of_passengers %>%
   group_by(Year, Month) %>% 
   summarize(Month, Total) %>% 
   filter(Year %in% c("2007", "2008")) %>% 
+  mutate(year_sel = ifelse(Year < 2008, 
+                           "2007", "2008")) %>% 
   ggplot(aes(x = Month, 
              y = Total,
-             color = Year,
-            group_vars())) +
+             color = year_sel)) +
   geom_point() + 
   geom_path(aes(group = Year)) +
-  scale_color_continuous_tableau() +
+  scale_color_manual(values = c("red", "blue")) +
   scale_y_continuous(labels = comma) 
 ```
 
 ```{r}
 Year <- as.factor(as.character(number_of_passengers$Year))
 
+Month <- number_of_passengers %>% 
+as.character(month(ymd(010101) + months(number_of_passengers$Month-1),label=TRUE,abbr=TRUE))
+
+
 number_of_passengers %>%
   group_by(Year, Month) %>% 
   summarize(Month, Total) %>% 
   filter(Year %in% c("2019", "2020")) %>% 
+  mutate(year_sel = ifelse(Year < 2020, 
+                           "2019", "2020")) %>% 
   ggplot(aes(x = Month, 
              y = Total,
-             color = Year,
-            group_vars())) +
+             color = year_sel)) +
   geom_point() + 
   geom_path(aes(group = Year)) +
-  scale_color_continuous_tableau() +
+  scale_color_manual(values = c("red", "blue")) +
   scale_y_continuous(labels = comma) 
 ```
 
