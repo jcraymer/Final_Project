@@ -154,7 +154,7 @@ number_of_passengers %>%
 ```
 
 ```{r}
-Year <- as.factor(as.character(number_of_passengers$Year))
+Year <- as.numeric(as.character(number_of_passengers$Year))
 
 Month <- number_of_passengers %>% 
 as.character(month(ymd(010101) + months(number_of_passengers$Month-1),label=TRUE,abbr=TRUE))
@@ -174,7 +174,6 @@ number_of_passengers %>%
   scale_color_manual(values = c("red", "blue")) +
   scale_y_continuous(labels = comma) 
 ```
-
 
 
 ```{r}
