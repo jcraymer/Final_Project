@@ -161,8 +161,11 @@ covid19 %>%
 ```
 
 ```{r}
+Year <- as.numeric(as.character(number_of_passengers$Year))
+
+Year <- discretize()
+
 number_of_passengers %>%
-  type.convert(as.is = TRUE) %>% 
   group_by(Year, Month) %>% 
   summarize(Month, Total) %>% 
   filter(Year %in% c("2007", "2008")) %>% 
@@ -172,8 +175,10 @@ number_of_passengers %>%
             group_vars())) +
   geom_point() + 
   geom_path(aes(group = Year)) +
+  scale_color_continuous_tableau() +
   scale_y_continuous(labels = comma) 
 ```
+
 ```{r}
 number_of_passengers %>%
   filter(Year == 2008) %>% 
