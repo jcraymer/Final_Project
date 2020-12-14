@@ -152,7 +152,6 @@ number_of_passengers %>%
 ```
 
 ```{r}
-<<<<<<< HEAD
 Year <- as.numeric(as.character(number_of_passengers$Year))
 
 number_of_passengers %>%
@@ -168,45 +167,6 @@ number_of_passengers %>%
   scale_color_continuous_tableau() +
   scale_y_continuous(labels = comma) 
 ```
-
-
-
-
-
-```{r}
-number_of_passengers %>%
-  filter(Year == 2008) %>% 
-  ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
-  scale_y_continuous(labels = comma) 
-```
-```{r}
-number_of_passengers %>%
-  filter(Year == 2019) %>% 
-  ggplot(aes(x = Month, 
-             y = Total)) + 
-  geom_line() + 
-  scale_y_continuous(labels = comma) 
-```
-=======
-Year <- as.factor(as.character(number_of_passengers$Year))
->>>>>>> daeaa5d1a82801f4b6abfa865c6415f5315f7aa4
-
-number_of_passengers %>%
-  group_by(Year, Month) %>% 
-  summarize(Month, Total) %>% 
-  filter(Year %in% c("2019", "2020")) %>% 
-  ggplot(aes(x = Month, 
-             y = Total,
-             color = Year,
-            group_vars())) +
-  geom_point() + 
-  geom_path(aes(group = Year)) +
-  scale_color_continuous_tableau() +
-  scale_y_continuous(labels = comma) 
-```
-
 
 
 ```{r}
