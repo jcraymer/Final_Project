@@ -89,17 +89,24 @@ TSA_Travelers_Data_2020 %>%
                   color = "dodgerblue4",
                   se = FALSE)+
   scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b")+
   labs(title = "Travel by Plane in <b style='color:#ff0000'>2019</b> vs. <span style='color:#000dd5;'>2020</span>", 
        x = " ", 
        y = "Number of People") +
   theme(legend.title = element_blank(),
         plot.background = element_rect(fill = "#b6d4c8"),
         axis.title = element_blank(),
-        plot.title = element_text(size = "15", face = "bold")) -> travelers
+        plot.title = element_text(size = "15", face = "bold")) +
+  theme_clean()-> travelers
+
+
+
+
+
 
 travelers_ggplotly <- ggplotly(
   p = travelers,
-  width = NULL,
+  width = NULL, 
   height = NULL,
   tooltip = "all",
   dynamicTicks = FALSE,
