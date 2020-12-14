@@ -163,8 +163,6 @@ covid19 %>%
 ```{r}
 Year <- as.numeric(as.character(number_of_passengers$Year))
 
-Year <- discretize()
-
 number_of_passengers %>%
   group_by(Year, Month) %>% 
   summarize(Month, Total) %>% 
