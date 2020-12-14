@@ -155,11 +155,12 @@ covid_ggplotly
 ```{r}
 number_of_passengers %>%
   filter(Year %in% c("2007", "2008")) %>% 
-  mutate(year_sel = ifelse(Year < 2008, 
-                           "2007", "2008")) %>% 
+  mutate(year = ifelse(Year < 2008, 
+                           "2007", "2008")) %>%
+  rename(`Total Passengers` = Total) %>%
   ggplot(aes(x = fct_inorder(MonthAbb), 
-             y = Total,
-             color = year_sel)) +
+             y = `Total Passengers`,
+             color = year)) +
   geom_point() + 
   geom_path(aes(group = Year)) +
   scale_color_manual(values = c("#d50077", "#ff8423")) +
@@ -192,11 +193,12 @@ travelers0708_ggplotly
 ```{r}
 number_of_passengers %>%
   filter(Year %in% c("2019", "2020")) %>% 
-  mutate(year_sel = ifelse(Year < 2020, 
+  mutate(year = ifelse(Year < 2020, 
                            "2019", "2020")) %>% 
+  rename(`Total Passengers` = Total) %>%
   ggplot(aes(x = fct_inorder(MonthAbb),
-             y = Total,
-             color = year_sel)) +
+             y = `Total Passengers`,
+             color = year)) +
   geom_point() + 
   geom_path(aes(group = Year)) +
   scale_color_manual(values = c("red", "blue")) +
@@ -232,10 +234,10 @@ travelers1920_ggplotly
 ```{r}
 unrate_large %>% 
   filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
-  mutate(year_sel = ifelse(DATE < "2010-01-01", 
+  mutate(Year = ifelse(DATE < "2010-01-01", 
                            "2008", "2020")) %>% 
-  select(DATE, UNRATE, month, MonthAbb, year_sel) %>% 
-  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = year_sel, group = year_sel)) + 
+  select(DATE, UNRATE, month, MonthAbb, Year) %>% 
+  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = Year, group = Year)) + 
   geom_point() +
   geom_line() +
   scale_color_manual(values = c("#ff8423", "blue")) +
