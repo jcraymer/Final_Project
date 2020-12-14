@@ -57,15 +57,12 @@ covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/mas
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
 
-unrate_large <- read_csv("UNRATE_Large.csv")
-
-unrate_large <<-unrate_large %>% 
-  mutate(month = month(unrate_large$DATE)) %>% 
-  transform(MonthAbb = month.abb[month])
+unrate_large <- read_csv("UNRATE_Large.csv") %>% 
+  mutate(MonthAbb = month(DATE,label = TRUE))
 
 number_of_passengers <- read_csv("Number_Of_Flights.csv")
 
-number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
+number_of_passengers <- transform(number_of_passengers, MonthAbb = month.abb[Month])
 ```
 
 ## R Markdown
@@ -98,7 +95,7 @@ TSA_Travelers_Data_2020 %>%
                   se = FALSE)+
   scale_y_continuous(labels = scales::comma) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b")+
-  labs(title = "Number of People Travelling by Plane in <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+  labs(title = "Number of People Traveling by Plane in <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = " ",
        subtitle = "Data for US",
@@ -192,7 +189,8 @@ number_of_passengers %>%
         panel.grid.major.y = element_line(color = "gray70"),
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank()) -> travelers_0708
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none") -> travelers_0708
 
 travelers0708_ggplotly <- ggplotly(
   p = travelers_0708,
@@ -234,7 +232,8 @@ number_of_passengers %>%
         panel.grid.major.y = element_line(color = "gray70"),
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank()) -> travelers_1920
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none") -> travelers_1920
 
 travelers1920_ggplotly <- ggplotly(
   p = travelers_1920,
@@ -260,12 +259,13 @@ unrate_large %>%
   filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
   mutate(Year = ifelse(DATE < "2010-01-01", 
                            "2008", "2020")) %>% 
-  select(DATE, UNRATE, month, MonthAbb, Year) %>% 
-  ggplot(aes(x = fct_inorder(MonthAbb), y = UNRATE, color = Year, group = Year)) + 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
   geom_point() +
   geom_line() +
   scale_color_manual(values = c("#970111", "#004e8f")) +
-  labs(title = "Unemployment Rate <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = " ") +
   theme(legend.title = element_blank(),
@@ -275,7 +275,8 @@ unrate_large %>%
         panel.grid.major.y = element_line(color = "gray70"),
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank()) -> unemployment_0820
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none") -> unemployment_0820
 
 unemployment0820_ggplotly <- ggplotly(
   p = unemployment_0820,
