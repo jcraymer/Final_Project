@@ -221,6 +221,12 @@ unrate_large %>%
         panel.grid.minor.y = element_blank(), 
         legend.position = "none")
 ```
+```{r}
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE")
+```
 
 
 
