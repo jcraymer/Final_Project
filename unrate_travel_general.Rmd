@@ -38,20 +38,12 @@ theme_set(theme_minimal())
 
 
 ```{r}
-#number_of_commercial_flights <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character())) #This is the flight data set
-
-#Fixed_Unemployment <- read_csv("Fixed Unemployment.csv", DONT THINK WE NEED THIS FILE, CAN USE UNRATE_Large instead
-  #  skip = 1)
-
+#This is the data set for TSA Travelers 
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
     col_types = cols(Date = col_date(format = "%m/%d/%Y")))
-#This is the data set for TSA Travelers 
 
 #COVID-19 data from the New York Times
 covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
-
-#Commercial Flights data
-#flight_data_2020 <- read_csv("number_of_commercial_flights.csv", col_types = cols(DateTime = col_character()))
 
 #TSA Travelers data
 TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
@@ -229,6 +221,7 @@ unrate_large %>%
         panel.grid.minor.y = element_blank(), 
         legend.position = "none")
 ```
+
 
 
 
