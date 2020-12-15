@@ -80,17 +80,17 @@ Graph #1
 ```{r}
 TSA_Travelers_Data_2020 %>% 
   arrange(Date) %>% 
-  rename(Tot_Trav_Year_Ago = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
-         Tot_Trav = `Total Traveler Throughput`) %>% 
+  rename(`Total Travelers 2019` = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         `Total Travers 2020` = `Total Traveler Throughput`) %>% 
   ggplot() +
-  geom_line(aes(x= Date, y = Tot_Trav), color = "dodgerblue4", alpha = 0.7) +
-  geom_line(aes(x = Date, y = Tot_Trav_Year_Ago), color = "firebrick4", alpha = 0.7) +
+  geom_line(aes(x= Date, y = `Total Travers 2020`), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = Date, y = `Total Travelers 2019`), color = "firebrick4", alpha = 0.7) +
   geom_smooth(aes(x = Date, 
-                  y = Tot_Trav_Year_Ago),
+                  y = `Total Travelers 2019`),
                   color = "firebrick4",
                   se = FALSE)+
   geom_smooth(aes(x = Date, 
-                  y = Tot_Trav),
+                  y = `Total Travers 2020`),
                   color = "dodgerblue4",
                   se = FALSE)+
   scale_y_continuous(labels = scales::comma) +
@@ -126,6 +126,7 @@ travelers_ggplotly
 ```
 
 Graph #2
+
 ```{r}
 covid19 %>% 
   group_by(date) %>% 
@@ -165,6 +166,9 @@ covid_ggplotly <- ggplotly(
 
 covid_ggplotly
 ```
+
+
+Graph #3
 
 ```{r}
 number_of_passengers %>%
@@ -209,6 +213,8 @@ travelers0708_ggplotly
   
 ```
 
+Graph #4
+
 ```{r}
 number_of_passengers %>%
   filter(Year %in% c("2019", "2020")) %>% 
@@ -252,7 +258,7 @@ travelers1920_ggplotly
 ```
 
 
-
+Graph #5
 
 ```{r}
 unrate_large %>% 
