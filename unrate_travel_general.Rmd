@@ -107,22 +107,7 @@ TSA_Travelers_Data_2020 %>%
         panel.grid.major.y = element_line(color = "gray70"),
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank())  -> travelers
-
-travelers_ggplotly <- ggplotly(
-  p = travelers,
-  width = NULL, 
-  height = NULL,
-  tooltip = "all",
-  dynamicTicks = FALSE,
-  layerData = 1,
-  originalData = TRUE,
-  source = "A"
-)
- 
-htmlwidgets::saveWidget(travelers_ggplotly, "travelers_ggplotly.html")
-
-travelers_ggplotly
+        panel.grid.minor.y = element_blank())
 ```
 
 Graph #2
@@ -139,7 +124,8 @@ covid19 %>%
   labs(x = "",
        y = "",
        color = "",
-       title = "2020 Cumulative COVID-19 <b style='color:#970111'>Deaths</b> and <span style='color:#004e8f;'>Cases</span> in U.S.") + 
+       title = "2020 Cumulative COVID-19 <b style='color:#970111'>Deaths</b> and <span style='color:#004e8f;'>Cases</span> in U.S.", 
+       caption = "Data from NYT") + 
   scale_y_log10(labels = comma) +
   scale_x_date(date_breaks = "1 month",
                date_labels = "%b",
@@ -151,20 +137,7 @@ covid19 %>%
         panel.grid.major.y = element_line(color = "gray70"),
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank()) -> covid_sit
-
-covid_ggplotly <- ggplotly(
-  p = covid_sit,
-  width = NULL,
-  height = NULL,
-  tooltip = "all",
-  dynamicTicks = FALSE,
-  layerData = 1,
-  originalData = TRUE,
-  source = "A"
-)
-
-covid_ggplotly
+        panel.grid.minor.y = element_blank())
 ```
 
 
@@ -185,7 +158,8 @@ number_of_passengers %>%
   scale_y_continuous(labels = scales::comma)+
   labs(title = "Number of Passengers <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
        x = " ", 
-       y = " ") +
+       y = " ", 
+       caption = "Data from U.S. BTS") +
   theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -194,23 +168,7 @@ number_of_passengers %>%
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(), 
-        legend.position = "none") -> travelers_0708
-
-travelers0708_ggplotly <- ggplotly(
-  p = travelers_0708,
-  width = NULL,
-  height = NULL,
-  tooltip = "all",
-  dynamicTicks = FALSE,
-  layerData = 1,
-  originalData = TRUE,
-  source = "A"
-)
-
-htmlwidgets::saveWidget(travelers0708_ggplotly, "travelers0708_ggplotly.html")
-
-travelers0708_ggplotly
-  
+        legend.position = "none")
 ```
 
 Graph #4
@@ -230,7 +188,8 @@ number_of_passengers %>%
   scale_y_continuous(labels = comma)+
   labs(title = "Number of Passengers <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
-       y = " ") +
+       y = " ", 
+       caption = "Data from U.S. BTS") +
    theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -239,22 +198,7 @@ number_of_passengers %>%
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(), 
-        legend.position = "none") -> travelers_1920
-
-travelers1920_ggplotly <- ggplotly(
-  p = travelers_1920,
-  width = NULL,
-  height = NULL,
-  tooltip = "all",
-  dynamicTicks = FALSE,
-  layerData = 1,
-  originalData = TRUE,
-  source = "A"
-)
-
-htmlwidgets::saveWidget(travelers1920_ggplotly, "travelers1920_ggplotly.html")
-
-travelers1920_ggplotly
+        legend.position = "none")
 ```
 
 
@@ -273,7 +217,8 @@ unrate_large %>%
   scale_color_manual(values = c("#970111", "#004e8f")) +
   labs(title = "Unemployment Rate (%) <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
-       y = " ") +
+       y = " ", 
+       caption = "Data from Federal Reserve Bank (FRED)") +
   theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -282,23 +227,7 @@ unrate_large %>%
         panel.grid.major.x = element_line(color = "gray70"),
         panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(), 
-        legend.position = "none") -> unemployment_0820
-
-unemployment0820_ggplotly <- ggplotly(
-  p = unemployment_0820,
-  width = NULL,
-  height = NULL,
-  tooltip = "all",
-  dynamicTicks = FALSE,
-  layerData = 1,
-  originalData = TRUE,
-  source = "A"
-)
-
-htmlwidgets::saveWidget(unemployment0820_ggplotly, "unemployment0820_ggplotly.html")
-
-unemployment0820_ggplotly
-  
+        legend.position = "none")
 ```
 
 
