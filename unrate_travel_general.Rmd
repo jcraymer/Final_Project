@@ -243,7 +243,7 @@ unrate_large %>%
   labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = "Unemployment and Travel Number (Unemployment*Travel) ", 
-       caption = "Data from ...") +
+       caption = "Data from TSA and BTS") +
    theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -275,7 +275,7 @@ unrate_large %>%
   labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = "Unemployment and Travel Number (Unemployment*Travel) ", 
-       caption = "Data from ...") +
+       caption = "Data from TSA and BTS") +
    theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -307,7 +307,7 @@ unrate_large %>%
   labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = "Unemployment Rate", 
        y = "Number of Travellers", 
-       caption = "Data from ...") +
+       caption = "Data from TSA and BTS") +
    theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -337,11 +337,12 @@ unrate_large %>%
   geom_smooth(method = "loess", se = FALSE) +
   geom_text(aes(label = MonthAbb.x), color = "black") +
   scale_color_manual(values = c("#970111", "#004e8f")) +
-  scale_y_continuous(labels = comma)+
-  labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(labels = comma) + 
+  labs(title = "Unemployment and Travelers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
        y = "Unemployment Rate", 
-       x = "Number of Travellers", 
-       caption = "Data from ...") +
+       x = "Number of Travelers", 
+       caption = "Data from TSA and BTS") +
    theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
