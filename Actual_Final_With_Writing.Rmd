@@ -1,0 +1,205 @@
+---
+title: "How Transportation by Flight is Impacted by Financial Crisises"
+author: "Juliet Cramer, Elie Rizk, and Julius Enarsson Enestrom"
+output: 
+  html_document:
+    theme: journal
+    toc: TRUE
+    toc_float: TRUE
+    df_print: paged             
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(base)
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(maps)          # for map data
+library(ggmap)         # for mapping points on maps
+library(gplots)        # for col2hex() function
+library(RColorBrewer)  # for color palettes
+library(sf)            # for working with spatial data
+library(leaflet)       # for highly customizable mapping
+library(ggthemes)      # for more themes (including theme_map())
+library(plotly)        # for the ggplotly() - basic interactivity
+library(gganimate)     # for adding animation layers to ggplots
+library(transformr)    # for "tweening" (gganimate)
+library(readr)
+library(scales)      # for even more plotting themes
+library(ggplot2)
+library(ggtext)    
+gs4_deauth()           # To not have to authorize each time you knit.
+theme_set(theme_minimal())
+```
+
+```{r}
+#COVID-19 data from the New York Times
+covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+
+#TSA Travelers data
+TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
+    col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+
+#FRED Unemployment Rate
+unrate_large <- read_csv("UNRATE_Large.csv") %>% 
+  mutate(MonthAbb = month(DATE,label = TRUE))
+
+#BTS Data 
+number_of_passengers <- transform(number_of_passengers, MonthAbb = month.abb[Month])
+```
+
+## TSA Throughput
+
+```{r}
+TSA_Travelers_Data_2020 %>% 
+  arrange(Date) %>% 
+  rename(`Total Travelers 2019` = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         `Total Travers 2020` = `Total Traveler Throughput`) %>% 
+  ggplot() +
+  geom_line(aes(x= Date, y = `Total Travers 2020`), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = Date, y = `Total Travelers 2019`), color = "firebrick4", alpha = 0.7) +
+  geom_smooth(aes(x = Date, 
+                  y = `Total Travelers 2019`),
+                  color = "firebrick4",
+                  se = FALSE)+
+  geom_smooth(aes(x = Date, 
+                  y = `Total Travers 2020`),
+                  color = "dodgerblue4",
+                  se = FALSE)+
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b")+
+  labs(title = "Number of People Traveling by Plane in <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ",
+       subtitle = "Data for US",
+       caption = "Data from TSA") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+## COVID-19 Cases
+
+```{r}
+covid19 %>% 
+  group_by(date) %>% 
+  summarise(total_num_cases = sum(cases), total_num_death = sum(deaths)) %>% 
+  ggplot() +
+  geom_line(aes(x = date, 
+                y = total_num_cases), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = date, 
+                y = total_num_death), color = "firebrick4", alpha = 0.7) + 
+  labs(x = "",
+       y = "",
+       color = "",
+       title = "2020 Cumulative COVID-19 <b style='color:#970111'>Deaths</b> and <span style='color:#004e8f;'>Cases</span> in U.S.", 
+       caption = "Data from NYT") + 
+  scale_y_log10(labels = comma) +
+  scale_x_date(date_breaks = "1 month",
+               date_labels = "%b",
+               date_minor_breaks = "1 week")+
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+
+## Unemployment Rates 2008 / 2020
+
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-31"))) %>%
+  mutate(Year = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020")) %>% 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
+  geom_point() +
+  geom_line() +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from Federal Reserve Bank (FRED)") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+## How Did the Unemployment Rate impact Travel in 2008? 
+
+```{r}
+number_of_passengers %>%
+  filter(Year %in% c("2007", "2008")) %>% 
+  mutate(year = ifelse(Year < 2008, 
+                           "2007", "2008")) %>%
+  rename(`Total Passengers` = Total) %>%
+  ggplot(aes(x = fct_inorder(MonthAbb), 
+             y = `Total Passengers`,
+             color = year)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "Number of Passengers <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from U.S. BTS") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+## How Did the Unemployment Rate impact Travel in 2020? 
+
+```{r}
+number_of_passengers %>%
+  filter(Year %in% c("2019", "2020")) %>% 
+  mutate(year = ifelse(Year < 2020, 
+                           "2019", "2020")) %>% 
+  rename(`Total Passengers` = Total) %>%
+  ggplot(aes(x = fct_inorder(MonthAbb),
+             y = `Total Passengers`,
+             color = year)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Number of Passengers <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from U.S. BTS") +
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
