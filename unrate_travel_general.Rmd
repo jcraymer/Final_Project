@@ -221,13 +221,207 @@ unrate_large %>%
         panel.grid.minor.y = element_blank(), 
         legend.position = "none")
 ```
+
+
 ```{r}
 unrate_large %>% 
   inner_join(number_of_passengers %>% 
                mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
-             by = "DATE")
+             by = "DATE") %>%
+  filter(Year %in% c(2008, 2020)) %>% 
+  group_by(DATE) %>% 
+  mutate(
+         Year = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020"),
+         unrate_dec = UNRATE*0.01,
+         unrate_by_travel = unrate_dec*Total) %>% 
+  ggplot(aes(x=MonthAbb.x, y = unrate_by_travel, color = Year, group = Year)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(se = FALSE) + 
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = "Unemployment and Travel Number (Unemployment*Travel) ", 
+       caption = "Data from ...") +
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+```{r}
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE") %>%
+  filter(Year %in% c(2008, 2020)) %>% 
+  group_by(DATE) %>% 
+  mutate(
+         Year = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020"),
+         unrate_dec = UNRATE*0.01,
+         unrate_by_travel = UNRATE*Total) %>% 
+  ggplot(aes(x=MonthAbb.x, y = unrate_by_travel, color = Year, group = Year)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(se = FALSE) + 
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = "Unemployment and Travel Number (Unemployment*Travel) ", 
+       caption = "Data from ...") +
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+```{r}
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE") %>%
+  filter(Year %in% c(2008, 2020)) %>% 
+  group_by(DATE) %>% 
+  mutate(
+         Year = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020"),
+         unrate_dec = UNRATE*0.01,
+         unrate_by_travel = UNRATE*Total) %>% 
+  ggplot(aes(x=UNRATE, y = Total, color = Year, group = Year)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(se = FALSE) + 
+  geom_text(aes(label = MonthAbb.x), nudge_y = 2000000, nudge_x = 0.3, color = "black", size = 3, fontface = "bold") +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = "Unemployment Rate", 
+       y = "Number of Travellers", 
+       caption = "Data from ...") +
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+```{r}
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE") %>%
+  filter(Year %in% c(2008, 2020)) %>% 
+  group_by(DATE) %>% 
+  mutate(
+         Year = ifelse(DATE < "2010-01-01", 
+                           "2008", "2020"),
+         unrate_dec = UNRATE*0.01,
+         unrate_by_travel = UNRATE*Total) %>% 
+  ggplot(aes(y=UNRATE, x = Total, color = Year, group = Year)) +
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  geom_smooth(method = "loess", se = FALSE) +
+  geom_text(aes(label = MonthAbb.x), color = "black") +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = comma)+
+  labs(title = "Unemployment and Travellers in <b style='color:#970111'>2008</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       y = "Unemployment Rate", 
+       x = "Number of Travellers", 
+       caption = "Data from ...") +
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
 ```
 
 
 
+
+
+```{r}
+
+
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE") %>%
+  filter(Year %in% c(2008, 2020)) %>% 
+  group_by(DATE) %>% 
+  select(UNRATE, Total, DATE, MonthAbb.x)
+  
+  
+unrate_large %>% 
+  inner_join(number_of_passengers %>% 
+               mutate(DATE = ymd(paste(Year, Month, "01", sep = "-"))),
+             by = "DATE") %>% 
+  lm(UNRATE ~ Total)
+
+UNRATE_dat <- c(5.0, 4.9,
+5.1,
+5.0,
+5.4,
+5.6,
+5.8,
+6.1,
+6.1,
+6.5,
+6.8,
+7.3,
+3.6,
+3.5,
+4.4,
+14.7,
+13.3,
+11.1,
+10.2,
+8.4,
+7.9
+)
+
+Total_dat <- c(63039614,
+61795763,
+73435041,
+68594907,
+71676019,
+74006675,
+76890108,
+74335965,
+59439795,
+64908538,
+58946452,
+62753016,
+80407837,
+75466810,
+43262237,
+3272494,
+8605081,
+16992088,
+24683495,
+26120727,
+26038755
+)
+  
+  lm(UNRATE_dat ~ Total_dat)
+  plot(UNRATE_dat, Total_dat)
+  abline(lm(UNRATE_dat ~ Total_dat))
+```
 
