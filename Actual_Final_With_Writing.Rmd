@@ -32,7 +32,6 @@ library(readr)
 library(scales)      # for even more plotting themes
 library(ggplot2)
 library(ggtext)    
-gs4_deauth()           # To not have to authorize each time you knit.
 theme_set(theme_minimal())
 ```
 
@@ -50,6 +49,8 @@ unrate_large <- read_csv("UNRATE_Large.csv") %>%
 
 #BTS Data 
 number_of_passengers <- transform(number_of_passengers, MonthAbb = month.abb[Month])
+
+number_of_passengers <- read_csv("Number_Of_Flights.csv")
 ```
 
 ## TSA Throughput
