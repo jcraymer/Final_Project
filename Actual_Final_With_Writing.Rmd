@@ -47,13 +47,39 @@ TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv",
 unrate_large <- read_csv("UNRATE_Large.csv") %>% 
   mutate(MonthAbb = month(DATE,label = TRUE))
 
-#BTS Data 
-number_of_passengers <- transform(number_of_passengers, MonthAbb = month.abb[Month])
-
 number_of_passengers <- read_csv("Number_Of_Flights.csv")
+#BTS Data 
+number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
 ```
 
-## TSA Throughput
+
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2007-01-01"), as.Date("2007-12-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-01"))) %>%
+  mutate(Year = ifelse(DATE < "2008-01-01", 
+                           "2007", "2008")) %>% 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
+  geom_point() +
+  geom_path() +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from Federal Reserve Bank (FRED)") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+
 
 ```{r}
 TSA_Travelers_Data_2020 %>% 
@@ -73,7 +99,7 @@ TSA_Travelers_Data_2020 %>%
                   se = FALSE)+
   scale_y_continuous(labels = scales::comma) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b")+
-  labs(title = "Number of People Traveling by Plane in <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+  labs(title = "TSA Throughput: <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = " ",
        subtitle = "Data for US",
