@@ -1,0 +1,248 @@
+---
+title: "Travel through Financial Crises"
+author: "Juliet Cramer, Elie Rizk, and Julius Enarsson Enestrom"
+output: 
+  html_document:
+    theme: journal
+    toc: TRUE
+    toc_float: TRUE
+    df_print: paged             
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, include=FALSE, echo=FALSE}
+library(base)
+library(tidyverse)     # for data cleaning and plotting
+library(lubridate)     # for date manipulation
+library(maps)          # for map data
+library(ggmap)         # for mapping points on maps
+library(gplots)        # for col2hex() function
+library(RColorBrewer)  # for color palettes
+library(sf)            # for working with spatial data
+library(leaflet)       # for highly customizable mapping
+library(ggthemes)      # for more themes (including theme_map())
+library(plotly)        # for the ggplotly() - basic interactivity
+library(gganimate)     # for adding animation layers to ggplots
+library(transformr)    # for "tweening" (gganimate)
+library(readr)
+library(scales)      # for even more plotting themes
+library(ggplot2)
+library(ggtext)    
+theme_set(theme_minimal())
+```
+
+```{r, include=FALSE}
+#COVID-19 data from the New York Times
+covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+
+#TSA Travelers data
+TSA_Travelers_Data_2020 <- read_csv("TSA Travelers Data 2020.csv", 
+    col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+
+#FRED Unemployment Rate
+unrate_large <- read_csv("UNRATE_Large.csv") %>% 
+  mutate(MonthAbb = month(DATE,label = TRUE))
+
+number_of_passengers <- read_csv("Number_Of_Flights.csv")
+#BTS Data 
+number_of_passengers <<- transform(number_of_passengers, MonthAbb = month.abb[Month])
+```
+
+## INTRODUCTION
+
+Towards the beginning of 2020, the COVID-19 pandemic swept through the United States, causing devastating unemployment and financial instability for much of the nation. One of the most severely impacted sectors was the aviation industry, which reported a significantly reduced number of travelers compared to previous years. More than a decade ago, the aviation industry suffered similar losses during the Great Recession of 2007-09. The downward spiral of the U.S economy in 2008 caused the largest increase in unemployment rate in any post war recession, leading to sharp decline in domestic travel. To better understand what the aviation industry fears the most, let’s explore to what extent unemployment causes declines in airline travel in the United States. 
+
+## THE DATA
+
+There are four main data sets that are used for the duration of this exploration. [The first](https://www.tsa.gov/coronavirus/passenger-throughput) data set is from TSA. This data set indicates the number of U.S. security throughput for 2019 and 2020. [The second](https://fred.stlouisfed.org/series/UNRATE) data set is from the Federal Reserve Bank and contains U.S. unemployment rates from 1950-present day. [The third](https://github.com/nytimes/covid-19-data) data set is from the NY times and contains the number of U.S. COVID-19 Cases by sate. [The last](https://www.transtats.bts.gov/Data_Elements.aspx?Data=1) data set is from the Beareu of Transportaion Statistics which contains the number of domestic, international, and total U.S. passengers by day. 
+
+## 2008 AND 2020 UNEMPLOYMENT
+
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2007-01-01"), as.Date("2007-12-01")) | between(DATE, as.Date("2008-01-01"), as.Date("2008-12-01"))) %>%
+  mutate(Year = ifelse(DATE < "2008-01-01", 
+                           "2007", "2008")) %>% 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
+  geom_point() +
+  geom_path() +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from Federal Reserve Bank (FRED)") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2019-01-01"), as.Date("2019-12-01"))) %>%
+  mutate(Year = ifelse(DATE < "2020-01-01", 
+                           "2019", "2020")) %>% 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
+  geom_point() +
+  geom_line() +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from Federal Reserve Bank (FRED)") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+## COVID-19
+
+```{r, echo = FALSE}
+covid19 %>% 
+  group_by(date) %>% 
+  summarise(total_num_cases = sum(cases), total_num_death = sum(deaths)) %>% 
+  ggplot() +
+  geom_line(aes(x = date, 
+                y = total_num_cases), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = date, 
+                y = total_num_death), color = "firebrick4", alpha = 0.7) + 
+  labs(x = "",
+       y = "",
+       color = "",
+       title = "2020 Cumulative COVID-19 <b style='color:#970111'>Deaths</b> and <span style='color:#004e8f;'>Cases</span> in U.S.", 
+       caption = "Data from NYT") + 
+  scale_y_log10(labels = comma) +
+  scale_x_date(date_breaks = "1 month",
+               date_labels = "%b",
+               date_minor_breaks = "1 week")+
+   theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+
+## 2008 and 2020 Travel
+
+```{r, echo = FALSE}
+number_of_passengers %>%
+  filter(Year %in% c("2007", "2008")) %>% 
+  mutate(year = ifelse(Year < 2008, 
+                           "2007", "2008")) %>%
+  rename(`Total Passengers` = Total) %>%
+  ggplot(aes(x = fct_inorder(MonthAbb), 
+             y = `Total Passengers`,
+             color = year)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "Number of Passengers <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from U.S. BTS") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+```{r, echo = FALSE}
+number_of_passengers %>%
+  filter(Year %in% c("2019", "2020")) %>% 
+  mutate(year = ifelse(Year < 2020, 
+                           "2019", "2020")) %>%
+  rename(`Total Passengers` = Total) %>%
+  ggplot(aes(x = fct_inorder(MonthAbb), 
+             y = `Total Passengers`,
+             color = year)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
+  scale_color_manual(values = c("#970111", "#004e8f")) +
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "Number of Passengers <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ", 
+       caption = "Data from U.S. BTS") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(), 
+        legend.position = "none")
+```
+
+
+```{r, echo = FALSE}
+TSA_Travelers_Data_2020 %>% 
+  arrange(Date) %>% 
+  rename(`Total Travelers 2019` = `Total Traveler Throughput (1 Year Ago - Same Weekday)`, 
+         `Total Travers 2020` = `Total Traveler Throughput`) %>% 
+  ggplot() +
+  geom_line(aes(x= Date, y = `Total Travers 2020`), color = "dodgerblue4", alpha = 0.7) +
+  geom_line(aes(x = Date, y = `Total Travelers 2019`), color = "firebrick4", alpha = 0.7) +
+  geom_smooth(aes(x = Date, 
+                  y = `Total Travelers 2019`),
+                  color = "firebrick4",
+                  se = FALSE)+
+  geom_smooth(aes(x = Date, 
+                  y = `Total Travers 2020`),
+                  color = "dodgerblue4",
+                  se = FALSE)+
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b")+
+  labs(title = "TSA Throughput: <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+       x = " ", 
+       y = " ",
+       subtitle = "Data for US",
+       caption = "Data from TSA") +
+  theme(legend.title = element_blank(),
+        panel.background = element_rect(fill = "gray95", color = "gray95"),
+        plot.background = element_rect(fill = "gray95"),
+        plot.title = element_markdown(size = "15", face = "bold"),
+        panel.grid.major.y = element_line(color = "gray70"),
+        panel.grid.major.x = element_line(color = "gray70"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+
+## ANALYSIS
+
+  Based on the data from 2008, it appears that unemployment does not have a significant impact on travel. Even if you assume that the relationship between unemployment and reductions in travel observed in 2008, the reduction in travel is minimal. 
+  Unemployment has a weak connection with travel reductions because of three main reasons. First, that people who are more likely to face unemployment might travel less. In other words, the people who retained their employment even after a general increase in unemployment rate, travel at a higher rate than Americans in general. Secondly, people who are unemployed might still travel via airplane. Unemployment might not necessarily mean an acute lack of money, nor does flying always have to be a huge investment. Thirdly, airplane travel could be a necessary cost for a lot of people, even if they have lost their jobs. Clearly, unemployment is a much weaker barrier from flying than a deadly disease that is known to spread in tight and crowded spaces like airplanes. In other words, everyone is susceptible to COVID, and not everyone to unemployment.
+  Several other interesting trends related to both COVID - 19 and unemployment are noteworthy. A central insight of this project is that it is ultimately humans who make decisions whether to fly or not. Even as COVID cases skyrocket towards the end of the year, the TSA data shows that travel is not severely affected, rather increasing slightly. This shows that COVID-19 case numbers are not directly linked to what decisions people make. Living with restrictions for the better part of a year might make people “used” to them, and less likely to stringently follow them. The perceived risk of flying could also go down as more people do it, and as one feels more “experienced” with the pandemic, and accustomed to its regulations. Simply put, rising cases does not mean that the severity of the situation is saliently present in people’s minds.
+  Another interesting observation from the 2008 unemployment and travel data is that even as employment drastically rises towards the end of the year, travel remains fairly similar to the previous year, and actually rises substantially in December. While it would make sense for travel to rise in the holiday season, a global financial crisis would seem to negatively impact travel. A possible explanation for this is that after a certain level of unemployment is reached, the section of people who fly have already lost their jobs. The remaining people are perhaps wealthier, or have good margins to be able to fly even in dire economic circumstances. After such a point, any further increase in unemployment would have little to no effect on travel numbers.
+
+
+
+
