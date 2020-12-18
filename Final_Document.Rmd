@@ -60,7 +60,7 @@ Towards the beginning of 2020, the COVID-19 pandemic swept through the United St
 
 There are four main data sets that are used for the duration of this exploration. [The first](https://www.tsa.gov/coronavirus/passenger-throughput) data set is from TSA. This data set indicates the number of U.S. security throughput for 2019 and 2020. [The second](https://fred.stlouisfed.org/series/UNRATE) data set is from the Federal Reserve Bank and contains U.S. unemployment rates from 1950-present day. [The third](https://github.com/nytimes/covid-19-data) data set is from the NY times and contains the number of U.S. COVID-19 Cases by sate. [The last](https://www.transtats.bts.gov/Data_Elements.aspx?Data=1) data set is from the Beareu of Transportaion Statistics which contains the number of domestic, international, and total U.S. passengers by day. 
 
-## 2008 AND 2020 UNEMPLOYMENT
+## 2008 UNEMPLOYMENT AND TRAVEL
 
 ```{r}
 unrate_large %>% 
@@ -87,22 +87,23 @@ unrate_large %>%
         panel.grid.minor.y = element_blank(), 
         legend.position = "none")
 ```
-
-```{r}
-unrate_large %>% 
-  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2019-01-01"), as.Date("2019-12-01"))) %>%
-  mutate(Year = ifelse(DATE < "2020-01-01", 
-                           "2019", "2020")) %>% 
-  select(DATE, UNRATE, MonthAbb, Year) %>%
-  rename(Month = MonthAbb) %>% 
-  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
-  geom_point() +
-  geom_line() +
+```{r, echo = FALSE}
+number_of_passengers %>%
+  filter(Year %in% c("2007", "2008")) %>% 
+  mutate(year = ifelse(Year < 2008, 
+                           "2007", "2008")) %>%
+  rename(`Total Passengers` = Total) %>%
+  ggplot(aes(x = fct_inorder(MonthAbb), 
+             y = `Total Passengers`,
+             color = year)) +
+  geom_point() + 
+  geom_path(aes(group = Year)) +
   scale_color_manual(values = c("#970111", "#004e8f")) +
-  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
+  scale_y_continuous(labels = scales::comma)+
+  labs(title = "Number of Passengers <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
        x = " ", 
        y = " ", 
-       caption = "Data from Federal Reserve Bank (FRED)") +
+       caption = "Data from U.S. BTS") +
   theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
@@ -113,6 +114,7 @@ unrate_large %>%
         panel.grid.minor.y = element_blank(), 
         legend.position = "none")
 ```
+
 
 ## COVID-19
 
@@ -144,25 +146,23 @@ covid19 %>%
         panel.grid.minor.y = element_blank())
 ```
 
-## 2008 and 2020 Travel
+## 2020 UNEMPLOYMENT AND TRAVEL
 
-```{r, echo = FALSE}
-number_of_passengers %>%
-  filter(Year %in% c("2007", "2008")) %>% 
-  mutate(year = ifelse(Year < 2008, 
-                           "2007", "2008")) %>%
-  rename(`Total Passengers` = Total) %>%
-  ggplot(aes(x = fct_inorder(MonthAbb), 
-             y = `Total Passengers`,
-             color = year)) +
-  geom_point() + 
-  geom_path(aes(group = Year)) +
+```{r}
+unrate_large %>% 
+  filter(between(DATE, as.Date("2020-01-01"), as.Date("2020-11-01")) | between(DATE, as.Date("2019-01-01"), as.Date("2019-12-01"))) %>%
+  mutate(Year = ifelse(DATE < "2020-01-01", 
+                           "2019", "2020")) %>% 
+  select(DATE, UNRATE, MonthAbb, Year) %>%
+  rename(Month = MonthAbb) %>% 
+  ggplot(aes(x = Month, y = UNRATE, color = Year, group = Year)) + 
+  geom_point() +
+  geom_line() +
   scale_color_manual(values = c("#970111", "#004e8f")) +
-  scale_y_continuous(labels = scales::comma)+
-  labs(title = "Number of Passengers <b style='color:#970111'>2007</b> vs. <span style='color:#004e8f;'>2008</span>", 
+  labs(title = "Unemployment Rate (%) <b style='color:#970111'>2019</b> vs. <span style='color:#004e8f;'>2020</span>", 
        x = " ", 
        y = " ", 
-       caption = "Data from U.S. BTS") +
+       caption = "Data from Federal Reserve Bank (FRED)") +
   theme(legend.title = element_blank(),
         panel.background = element_rect(fill = "gray95", color = "gray95"),
         plot.background = element_rect(fill = "gray95"),
